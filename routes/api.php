@@ -12,11 +12,14 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::middleware('api')->post('/register' , 'APIControllers\AuthController@register');
+Route::middleware('api')->post('/login' , 'APIControllers\AuthController@login');
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => ['auth:api']], function () {
+    Route::get('/rocket', 'APIControllers\RocketController@index');
+    Route::post('/rocket', 'APIControllers\RocketController@favorites');
 });
 
-
-Route::get('login', array('middleware' => 'cors', 'uses' => 'TestController@index'));
-Route::post('login', array('middleware' => 'cors', 'uses' => 'TestController@login'));
+Route::resource('notes', 'APIControllers\NotesController', ['only' => [
+    'index', 'store', 'update', 'destroy'
+]]);
